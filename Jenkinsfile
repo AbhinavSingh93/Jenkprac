@@ -23,8 +23,8 @@ pipeline {
                         bat '''
                         echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
                         docker-compose build web
-                        docker tag App:latest traversal99/App:%BUILD_NUMBER%
-                        docker push traversal99/App:%BUILD_NUMBER%
+                        docker tag app:latest traversal99/app:%BUILD_NUMBER%
+                        docker push traversal99/app:%BUILD_NUMBER%
                         '''
                     }
                 }
