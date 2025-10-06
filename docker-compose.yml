@@ -1,0 +1,27 @@
+version: &#39;3.8&#39;
+services:
+# 1. Node.js Web Service
+web:
+build:
+context: .
+dockerfile: Dockerfile
+image: my-nodejs-app:${BUILD_NUMBER} # Use a Jenkins variable for tagging
+container_name: node-web
+restart: always
+ports:
+- &quot;8000:3000&quot; # Host Port 8000 maps to container Port 3000
+depends_on:
+- db
+environment:
+# Inject environment variables for the application to connect to the DB
+- DB_HOST=db
+- DB_PORT=27017
+# 2. Database Service (Example: MongoDB)
+db:
+image: mongo:latest
+container_name: node-mongo-db
+restart: always
+volumes:
+- mongodb_data:/data/db
+volumes:
+mongodb_data:
