@@ -5,7 +5,7 @@ web:
 build:
 context: .
 dockerfile: Dockerfile
-image: App:latest # Use a Jenkins variable for tagging
+image: app:latest # Use a Jenkins variable for tagging
 container_name: node-web
 restart: always
 ports:
