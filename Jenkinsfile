@@ -37,6 +37,8 @@ pipeline {
                     bat '''
                     docker stop node-web node-mongo-db || exit 0
                     docker rm node-web node-mongo-db || exit 0
+                    '''
+                    bat '''
                     set BUILD_NUMBER=%BUILD_NUMBER%
                     docker-compose up -d --force-recreate
                     '''
