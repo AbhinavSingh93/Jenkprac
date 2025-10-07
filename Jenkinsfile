@@ -3,12 +3,23 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'traversal99'
+        DOCKER_BUILDKIT = '1' // Enable BuildKit for faster builds
     }
 
     stages {
         stage('Checkout Source') {
             steps {
                 git url: 'https://github.com/AbhinavSingh93/Jenkprac', branch: 'master'
+            }
+        }
+
+        stage('Pre-pull Base Images') {
+            steps {
+                script {
+                    // Pre-pull base images to avoid long downloads during build
+                    bat 'docker pull node:20-alpine'
+                    bat 'docker pull mongo:latest'
+                }
             }
         }
 
@@ -20,12 +31,15 @@ pipeline {
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )]) {
-                        bat '''
-                        echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
-                        docker-compose build web
-                        docker tag app:latest traversal99/app:%BUILD_NUMBER%
-                        docker push traversal99/app:%BUILD_NUMBER%
-                        '''
+                        retry(2) {
+                            bat '''
+                            echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                            set DOCKER_BUILDKIT=1
+                            docker-compose build web
+                            docker tag app:latest traversal99/app:%BUILD_NUMBER%
+                            docker push traversal99/app:%BUILD_NUMBER%
+                            '''
+                        }
                     }
                 }
             }
